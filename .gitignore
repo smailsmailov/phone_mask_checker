@@ -1,0 +1,4 @@
+*.h5
+venv
+.venv
+*.csv
