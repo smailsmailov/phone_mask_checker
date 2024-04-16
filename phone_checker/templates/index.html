@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content%}
+
+<div class="d-flex justify-content-center align-items-center fs-2 flex-column flex-wrap vw-100 vh-100">
+    <div >
+        <input  
+                onchange="check_phone(this)"
+                type="text"
+                name="phone"
+                id="phone_mask"
+                placeholder="+7(000)000-00-00" />
+    </div>
+    <div><span class="text-success" id="provider"></span></div>
+    <div><span class="text-success" id="position"></span></div>
+    <div><span id="error" class="mt-3 fs-1" style="color:red;"></span></div>
+    <div><span id="info" class="mt-3 fs-1 text-info" ></span></div>
+
+
+   <script>
+    function check_phone(obj){ 
+        $("#error").text("")
+        $("#provider").text("")
+        $("#position").text("")
+        $("#info").text("")
+        var phone = obj.value
+        var symbols = ["+","(",")","-",]
+        symbols.forEach((element)=> {
+            phone = phone.replaceAll(element , "")
+        })
+        if(phone.includes("_")){
+            $("#error").text("Телефон полностью не заполнен!")
+        }
+        else{
+            $("#error").text("")
+            $.ajax({
+                url: 'check_phone/',         
+                method: 'post',            
+                dataType: 'json',           
+                data: {phone: phone},    
+                success: function(data){  
+                    $("#provider").text(data["provider"])
+                    $("#position").text(data["position"])
+                },
+                error :  function(data , status , error){
+                    console.log(data , status , error)  
+                    if(data.status == "404"){
+                        $("#info").text("Номер отсутствует в базе")
+                        return 1 
+                    }
+                    else if(data.status == "400"){
+                        $("#error").text("Данные указаны не верно!")
+                        return 1 
+                    }
+                    else{
+                        $("#error").text("Данные указаны не верно!")
+                        return 1 
+                    }
+                }
+            });
+        }
+        console.log(phone)
+    }
+
+
+   </script>
+
+
+    
+</div>
+{% endblock%}
