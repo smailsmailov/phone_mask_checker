@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  redis:
+    container_name: redis_container
+    image: redis
+    command: redis-server
+    ports:
+      - "14000:6379"
+    networks:
+      - postgres
+  django:
+    
+    build: .
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/work_dir/
+    ports:
+      - 8000:8000
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: pgdb
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdbdata: null

@@ -25,8 +25,18 @@ SECRET_KEY = 'django-insecure-o@6pasx1z7%41pjlx)551ft@rgo=0tmwb-ufhhd7*ms^+dh$69
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+
+CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 # Application definition
 
@@ -39,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'main_app',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +88,12 @@ WSGI_APPLICATION = 'phone_checker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres', 
+        'PASSWORD': 'postgres', 
+        'HOST': 'pgdb',
+        'PORT': '5432',  
     }
 }
 
